@@ -1,4 +1,4 @@
-# DIO - Trilha Java Básico
+# DIO - Java Bank
 
 [Digital Inovation One](https://github.com/digitalinnovationone/trilha-java-basico/tree/main/desafios/sintaxe)
 
