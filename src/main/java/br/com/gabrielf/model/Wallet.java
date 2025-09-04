@@ -1,0 +1,61 @@
+package br.com.gabrielf.model;
+
+import lombok.Getter;
+import lombok.ToString;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+
+public abstract class Wallet {
+
+    @Getter
+    private final BanckService serviceType;
+
+    protected  final List<Money> money;
+
+    public Wallet(BanckService serviceType) {
+        this.serviceType = serviceType;
+        this.money = new ArrayList<>();
+    }
+
+    protected  List<Money> generateMoney(final long amount, final String description){
+
+        MoneyAudit history = new MoneyAudit(UUID.randomUUID(), serviceType, description, OffsetDateTime.now());
+        return Stream.generate(() -> new Money(history)).limit(amount).toList();
+
+    }
+
+    public long getFounds(){
+        return this.money.size();
+    }
+
+    public  void addMoney(final List<Money> money, final  BanckService service, final String description){
+        MoneyAudit history = new MoneyAudit(UUID.randomUUID(), serviceType, description, OffsetDateTime.now());
+        money.forEach(m -> m.addHistory(history));
+        this.money.addAll(money);
+    }
+
+    public List<Money> reduceMoney(final long amount){
+        List<Money> toRemove = new ArrayList<>();
+        for (int i = 0; i< amount; i++){
+            toRemove.add(this.money.removeFirst());
+        }
+        return  toRemove;
+    }
+
+    public List<MoneyAudit> getFinancialTrasactions(){
+        return money.stream().flatMap(m -> m.getHistory().stream()).toList();
+    }
+
+    @Override
+    public String toString() {
+        return "Wallet{" +
+                "serviceType=" + serviceType +
+                ", money=" + money.size()/100 + "," +(money.size()%100)+
+                '}';
+    }
+}
